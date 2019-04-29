@@ -4,7 +4,7 @@
 
 using Toybox.Math as Math;
 using Toybox.Time as Time;
-//using Toybox.System as Sys;
+using Toybox.System as Sys;
 
 enum {
 	NIGHT_END,
@@ -112,4 +112,54 @@ class SunCalc {
 
 		return fromJulian(Jrise);
 	}
+	
+function momentToString(moment, Today, Tomorrow) {
+	//https://github.com/haraldh/SunCalc/blob/master/source/SunCalcView.mc
+		if (moment == null) {
+			return "--:--";
+		}
+
+   		var tinfo = Time.Gregorian.info(new Time.Moment(moment.value() + 30), Time.FORMAT_SHORT);
+		var XM="";
+		var text="";
+		var time;
+		if (Sys.getDeviceSettings().is24Hour) {
+			time = tinfo.hour.format("%02d") + ":" + tinfo.min.format("%02d");
+		} else {
+			var hour = tinfo.hour % 12;
+			if (hour == 0) {
+				hour = 12;
+			}
+			time = hour.format("%02d") + ":" + tinfo.min.format("%02d");
+			if (tinfo.hour < 12 || tinfo.hour == 24) {
+				XM = "AM";
+			} else {
+				XM = "PM";
+			}
+		}
+		var now = Time.now();
+		var days = (moment.value() / Time.Gregorian.SECONDS_PER_DAY).toNumber()
+			- (now.value() / Time.Gregorian.SECONDS_PER_DAY).toNumber();
+
+		if (days == 0) {
+			text = Today + " ";
+		}
+		
+		if (days > 0) {
+			if (days == 1) {
+				text = Tomorrow + " ";
+			} else {
+				text = "in " + days + " days ";
+			}
+		}
+		if (days < 0) {
+			if (days == -1) {
+				text = "yesterday ";
+			} else {
+				text = -days + " days ago ";
+			}
+		}
+		return [time, XM, text];
+	}
+	
 }

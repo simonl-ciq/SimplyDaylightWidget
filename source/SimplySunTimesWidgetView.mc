@@ -35,59 +35,6 @@ class SimplySunTimesWidgetView extends Ui.View {
 //		return Time.now();
 	}    
 */
-
-function momentToString(moment) {
-	//https://github.com/haraldh/SunCalc/blob/master/source/SunCalcView.mc
-		if (moment == null) {
-			return "--:--";
-		}
-
-   		var tinfo = Time.Gregorian.info(new Time.Moment(moment.value() + 30), Time.FORMAT_SHORT);
-		var XM="";
-		var text="";
-		var time;
-		if (Sys.getDeviceSettings().is24Hour) {
-			time = tinfo.hour.format("%02d") + ":" + tinfo.min.format("%02d");
-		} else {
-			var hour = tinfo.hour % 12;
-			if (hour == 0) {
-				hour = 12;
-			}
-			time = hour.format("%02d") + ":" + tinfo.min.format("%02d");
-			if (tinfo.hour < 12 || tinfo.hour == 24) {
-				XM = "AM";
-			} else {
-				XM = "PM";
-			}
-		}
-		var now = Time.now();
-		var days = (moment.value() / Time.Gregorian.SECONDS_PER_DAY).toNumber()
-			- (now.value() / Time.Gregorian.SECONDS_PER_DAY).toNumber();
-
-		if (days == 0) {
-//			text = text + "today ";
-			text = text + Today + " ";
-		}
-		
-		if (days > 0) {
-			if (days == 1) {
-				//text = text + "tomorrow ";
-				text = text + Tomorrow + " ";
-			} else {
-				text = text + "in " + days + " days ";
-			}
-		}
-		if (days < 0) {
-			if (days == -1) {
-				text = text + "yesterday ";
-			} else {
-				text = text + "" + days + " days ";
-			}
-		}
-		return [time, XM, text];
-	}
-
-
 	(:xtinyRound)
     function LayItOut() {
 	    return [Gfx.getFontAscent(Gfx.FONT_XTINY), 8];
@@ -192,8 +139,8 @@ function momentToString(moment) {
 		    	if (!selected && sunset_time.lessThan(sunrise_time)) {
 		    		set = 1;
 		    	}
-		    	suntimes[0] = momentToString(sunrise_time);
-		    	suntimes[1] = momentToString(sunset_time);
+		    	suntimes[0] = sc.momentToString(sunrise_time, Today, Tomorrow);
+		    	suntimes[1] = sc.momentToString(sunset_time, Today, Tomorrow);
 				if (myInfo.accuracy >= Position.QUALITY_POOR) {
 		            Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:onPosition));
 					needGPS = false;
