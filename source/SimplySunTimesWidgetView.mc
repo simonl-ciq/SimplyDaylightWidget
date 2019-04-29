@@ -155,7 +155,7 @@ function momentToString(moment) {
 		day.locY = value.locY + Gfx.getFontAscent(Gfx.FONT_NUMBER_THAI_HOT)+1;
 		day.locX = hour.locX - params[1];
 		myInfo = Position.getInfo();
-        if (myInfo == null || myInfo.accuracy != Position.QUALITY_GOOD) {
+        if (myInfo == null || myInfo.accuracy < Position.QUALITY_POOR) {
             Position.enableLocationEvents(Position.LOCATION_CONTINUOUS, method(:onPosition));
 		}
     }
@@ -170,7 +170,7 @@ function momentToString(moment) {
     // Update the view
     function onUpdate(dc) {
 		if (needGPS) {
-	    	if (myInfo == null || myInfo.accuracy != Position.QUALITY_GOOD) {
+	    	if (myInfo == null || myInfo.accuracy < Position.QUALITY_POOR) {
 		    	myInfo = Position.getInfo();
 		    }
 			if (myInfo.accuracy != Position.QUALITY_NOT_AVAILABLE && myInfo.position != null) {
@@ -194,7 +194,7 @@ function momentToString(moment) {
 		    	}
 		    	suntimes[0] = momentToString(sunrise_time);
 		    	suntimes[1] = momentToString(sunset_time);
-				if (myInfo.accuracy == Position.QUALITY_GOOD) {
+				if (myInfo.accuracy >= Position.QUALITY_POOR) {
 		            Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:onPosition));
 					needGPS = false;
 				}
