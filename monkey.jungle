@@ -64,6 +64,8 @@ vivoactive_hr.resourcePath = $(vivoactive_hr.resourcePath);$(icon40x33);resource
 #
 #xtinyRound;tinyRound;smallRound;mediumRound;tinyRectangle;smallRectangle;mediumRectangle
 #
+base.excludeAnnotations = xtinyRound;tinyRound;smallRound;mediumRound;tinyRectangle;smallRectangle;mediumRectangle
+#
 approachs60.excludeAnnotations = tinyRound;smallRound;mediumRound;tinyRectangle;smallRectangle;mediumRectangle
 d2bravo.excludeAnnotations = xtinyRound;tinyRound;smallRound;tinyRectangle;smallRectangle;mediumRectangle
 d2bravo_titanium.excludeAnnotations = xtinyRound;tinyRound;smallRound;tinyRectangle;smallRectangle;mediumRectangle
@@ -114,6 +116,8 @@ vivoactive3mlte.excludeAnnotations = tinyRound;smallRound;mediumRound;tinyRectan
 vivoactive_hr.excludeAnnotations = xtinyRound;tinyRound;smallRound;mediumRound;tinyRectangle;mediumRectangle
 #
 # oneLine;twoLines
+#
+base.excludeAnnotations = $(base.excludeAnnotations);oneLine;twoLines
 #
 approachs60.excludeAnnotations = $(approachs60.excludeAnnotations);oneLine
 d2bravo.excludeAnnotations = $(d2bravo.excludeAnnotations);oneLine
