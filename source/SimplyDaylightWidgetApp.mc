@@ -1,6 +1,6 @@
 using Toybox.Application as App;
 
-class SimplySunTimesWidgetApp extends App.AppBase {
+class SimplyDaylightWidgetApp extends App.AppBase {
 	hidden var SunTimesView;
 
     function initialize() {
@@ -17,8 +17,8 @@ class SimplySunTimesWidgetApp extends App.AppBase {
 
     // Return the initial view of your application here
     function getInitialView() {
-        SunTimesView = new SimplySunTimesWidgetView();
-        return [ SunTimesView, new SimplySunTimesWidgetDelegate(SunTimesView) ];
+        SunTimesView = new SimplyDaylightWidgetView();
+        return [ SunTimesView, new SimplyDaylightWidgetDelegate(SunTimesView) ];
     }
 
 }

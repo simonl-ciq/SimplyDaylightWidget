@@ -5,7 +5,7 @@ using Toybox.Time as Time;
 using Toybox.Position as Position;
 using Toybox.Time.Gregorian;
 
-class SimplySunTimesWidgetView extends Ui.View {
+class SimplyDaylightWidgetView extends Ui.View {
 	var Today;
 	var Tomorrow;
 

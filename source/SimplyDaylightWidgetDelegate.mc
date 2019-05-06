@@ -1,7 +1,7 @@
 using Toybox.WatchUi as Ui;
 using Toybox.System as Sys;
 
-class SimplySunTimesWidgetDelegate extends Ui.BehaviorDelegate {
+class SimplyDaylightWidgetDelegate extends Ui.BehaviorDelegate {
     /* Initialize and get a reference to the view, so that
      * user iterations can call methods in the main view. */
      var SSTView;
