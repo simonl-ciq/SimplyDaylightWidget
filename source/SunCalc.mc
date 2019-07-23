@@ -4,6 +4,7 @@
 
 using Toybox.Math as Math;
 using Toybox.Time as Time;
+using Toybox.Time.Gregorian;
 using Toybox.System as Sys;
 
 enum {
@@ -114,7 +115,7 @@ class SunCalc {
 	}
 	
 function momentToString(moment, Today, Tomorrow) {
-	//https://github.com/haraldh/SunCalc/blob/master/source/SunCalcView.mc
+// based on https://github.com/haraldh/SunCalc/blob/master/source/SunCalcView.mc
 		if (moment == null) {
 			return "--:--";
 		}
@@ -137,27 +138,12 @@ function momentToString(moment, Today, Tomorrow) {
 				XM = "PM";
 			}
 		}
-		var now = Time.now();
-		var days = (moment.value() / Time.Gregorian.SECONDS_PER_DAY).toNumber()
-			- (now.value() / Time.Gregorian.SECONDS_PER_DAY).toNumber();
 
-		if (days == 0) {
+		var midnight_tonight = new Time.Moment(Time.today().value() + Gregorian.SECONDS_PER_DAY);
+		if (moment.lessThan(midnight_tonight) == true) {
 			text = Today + " ";
-		}
-		
-		if (days > 0) {
-			if (days == 1) {
-				text = Tomorrow + " ";
-			} else {
-				text = "in " + days + " days ";
-			}
-		}
-		if (days < 0) {
-			if (days == -1) {
-				text = "yesterday ";
-			} else {
-				text = -days + " days ago ";
-			}
+		} else {
+			text = Tomorrow + " ";
 		}
 		return [time, XM, text];
 	}
