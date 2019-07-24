@@ -21,20 +21,6 @@ class SimplyDaylightWidgetView extends Ui.View {
         View.initialize();
     }
 
-    
-/*
-	function getNow() {
-	var options = {
-    	:year   => 2019,
-    	:month  => 04,
-    	:day    => 29,
-    	:hour   => 00,
-    	:minute => 0
-		};
-		return Gregorian.moment(options);
-//		return Time.now();
-	}    
-*/
 	(:xtinyRound)
     function LayItOut() {
 	    return [Gfx.getFontAscent(Gfx.FONT_XTINY), 8];
@@ -121,40 +107,41 @@ class SimplyDaylightWidgetView extends Ui.View {
 		    	myInfo = Position.getInfo();
 		    }
 			if (myInfo.accuracy != Position.QUALITY_NOT_AVAILABLE && myInfo.position != null) {
-//	    	    myInfo.position = Position.parse("53.825564, -2.421976", Position.GEO_DEG);
-//	    	    myInfo.position = Position.parse("53.322446, -2.645501", Position.GEO_DEG);
-
-	    		var sc = new SunCalc();
-	    		var loc = myInfo.position.toRadians();
-		    	var time_now = Time.now();
-		    	var time_tomorrow = time_now.add(new Time.Duration(Gregorian.SECONDS_PER_DAY));
-		    	var sunrise_time = sc.calculate(time_now, loc[0], loc[1], SUNRISE);
-		    	if (sunrise_time.lessThan(time_now)) {
-		    		sunrise_time = sc.calculate(time_tomorrow, loc[0], loc[1], SUNRISE);
-		    	}
-		    	var sunset_time = sc.calculate(time_now, loc[0], loc[1], SUNSET);
-		    	if (sunset_time.lessThan(time_now)) {
-		    		sunset_time = sc.calculate(time_tomorrow, loc[0], loc[1], SUNSET);
-		    	}
-		    	if (!selected && sunset_time.lessThan(sunrise_time)) {
-		    		set = 1;
-		    	}
-		    	suntimes[0] = sc.momentToString(sunrise_time, Today, Tomorrow);
-		    	suntimes[1] = sc.momentToString(sunset_time, Today, Tomorrow);
 				if (myInfo.accuracy >= Position.QUALITY_POOR) {
 		            Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:onPosition));
 					needGPS = false;
-				}
-				title = titles;
-	    	} else {
-				title[set] = "No GPS";
-				suntimes[set] = ["00:00", "", ""];
+	    		}
 	    	}
-	    }
+		}
+//	    	    myInfo.position = Position.parse("53.825564, -2.421976", Position.GEO_DEG);
+//	    	    myInfo.position = Position.parse("34.0522, -118.2437", Position.GEO_DEG);
+// Tokyo 35.6762, 139.6503
+		if (myInfo.accuracy > Position.QUALITY_NOT_AVAILABLE) {
+    		var sc = new SunCalc();
+    		var loc = myInfo.position.toRadians();
+	    	var time_now = Time.now();
+	    	var time_tomorrow = time_now.add(new Time.Duration(Gregorian.SECONDS_PER_DAY));
+	    	var sunrise_time = sc.calculate(time_now, loc[0], loc[1], SUNRISE);
+	    	if (sunrise_time.lessThan(time_now)) {
+	    		sunrise_time = sc.calculate(time_tomorrow, loc[0], loc[1], SUNRISE);
+	    	}
+	    	var sunset_time = sc.calculate(time_now, loc[0], loc[1], SUNSET);
+	    	if (sunset_time.lessThan(time_now)) {
+	    		sunset_time = sc.calculate(time_tomorrow, loc[0], loc[1], SUNSET);
+	    	}
+	    	if (!selected && sunset_time.lessThan(sunrise_time)) {
+	    		set = 1;
+	    	}
+	    	suntimes[0] = sc.momentToString(sunrise_time, Today, Tomorrow);
+	    	suntimes[1] = sc.momentToString(sunset_time, Today, Tomorrow);
+			title = titles;
+		} else {
+			title[set] = "No GPS";
+			suntimes[set] = ["00:00", "", ""];
+		}
 	    if (suntimes[set][0] != null) {
 	    	Draw(set);
 		}
-        myInfo = null;
 
         // Call the parent onUpdate function to redraw the layout
         View.onUpdate(dc);
