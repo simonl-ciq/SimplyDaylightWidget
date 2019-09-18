@@ -21,4 +21,9 @@ class SimplyDaylightWidgetApp extends App.AppBase {
         return [ SunTimesView, new SimplyDaylightWidgetDelegate(SunTimesView) ];
     }
 
+(:glance)
+    function getGlanceView() {
+        return [ new SimplyDaylightWidgetGlanceView() ];
+    }
+
 }

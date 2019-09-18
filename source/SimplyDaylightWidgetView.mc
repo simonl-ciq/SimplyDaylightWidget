@@ -156,3 +156,20 @@ class SimplyDaylightWidgetView extends Ui.View {
 
 }
 
+
+(:glance)
+class SimplyDaylightWidgetGlanceView extends Ui.GlanceView {
+
+	function initialize() {
+		GlanceView.initialize();
+	}
+
+	function onUpdate(dc) {
+		dc.setColor(Graphics.COLOR_BLACK,Graphics.COLOR_BLACK);
+		dc.clear();
+		dc.setColor(Graphics.COLOR_WHITE,Graphics.COLOR_TRANSPARENT);
+
+		dc.drawText(0, 18, Graphics.FONT_SMALL,"Simply Daylight", Graphics.TEXT_JUSTIFY_LEFT);
+	}
+
+}
