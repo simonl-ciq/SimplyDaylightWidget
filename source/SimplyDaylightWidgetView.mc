@@ -1,9 +1,9 @@
 using Toybox.WatchUi as Ui;
-using Toybox.System as Sys;
 using Toybox.Graphics as Gfx;
 using Toybox.Time as Time;
 using Toybox.Position as Position;
 using Toybox.Time.Gregorian;
+//using Toybox.System as Sys;
 
 class SimplyDaylightWidgetView extends Ui.View {
 	var Today;
@@ -156,20 +156,60 @@ class SimplyDaylightWidgetView extends Ui.View {
 
 }
 
-
 (:glance)
 class SimplyDaylightWidgetGlanceView extends Ui.GlanceView {
+	var vcentre = 80;
 
 	function initialize() {
 		GlanceView.initialize();
 	}
 
+	function onLayout(dc) {
+		vcentre = dc.getFontHeight(Gfx.FONT_SMALL) - 10;
+	}
+
 	function onUpdate(dc) {
+		var suntime = ["", "", ""];
+    	var sunevent = "";
+	    var	myInfo = Position.getInfo();
+//	    	    myInfo.position = Position.parse("53.825564, -2.421976", Position.GEO_DEG);
+//	    	    myInfo.position = Position.parse("34.0522, -118.2437", Position.GEO_DEG);
+// Tokyo 35.6762, 139.6503
+
+		if (myInfo.accuracy > Position.QUALITY_NOT_AVAILABLE && myInfo.position != null) {
+    		var sc = new SunCalc();
+    		var loc = myInfo.position.toRadians();
+	    	var time_now = Time.now();
+	    	var time_tomorrow = time_now.add(new Time.Duration(Gregorian.SECONDS_PER_DAY));
+	    	var sunrise_time = sc.calculate(time_now, loc[0], loc[1], SUNRISE);
+	    	if (sunrise_time.lessThan(time_now)) {
+	    		sunrise_time = sc.calculate(time_tomorrow, loc[0], loc[1], SUNRISE);
+	    	}
+	    	var sunset_time = sc.calculate(time_now, loc[0], loc[1], SUNSET);
+	    	if (sunset_time.lessThan(time_now)) {
+	    		sunset_time = sc.calculate(time_tomorrow, loc[0], loc[1], SUNSET);
+	    	}
+	    	var time;
+	    	if (sunset_time.lessThan(sunrise_time)) {
+		    	time = sunset_time;
+		    	sunevent = "Sunset ";
+		    } else {
+		    	time = sunrise_time;
+		    	sunevent = "Sunrise ";
+		    }
+	    	suntime = sc.momentToString(time, "", "");
+		}
 		dc.setColor(Graphics.COLOR_BLACK,Graphics.COLOR_BLACK);
 		dc.clear();
 		dc.setColor(Graphics.COLOR_WHITE,Graphics.COLOR_TRANSPARENT);
-
-		dc.drawText(0, 18, Graphics.FONT_SMALL,"Simply Daylight", Graphics.TEXT_JUSTIFY_LEFT);
+		dc.drawText(0, -7, Gfx.FONT_SMALL, "Simply Daylight", Gfx.TEXT_JUSTIFY_LEFT);
+		dc.setColor(Gfx.COLOR_BLUE, Gfx.COLOR_TRANSPARENT);
+		dc.drawText(0, vcentre, Gfx.FONT_TINY, sunevent, Gfx.TEXT_JUSTIFY_LEFT);
+		if (myInfo.accuracy == Position.QUALITY_LAST_KNOWN) {
+			dc.setColor(Gfx.COLOR_LT_GRAY, Gfx.COLOR_TRANSPARENT);
+		}
+		var x = dc.getTextDimensions("Simply ", Gfx.FONT_SMALL)[0];
+		dc.drawText(x, vcentre, Gfx.FONT_TINY, suntime[0], Gfx.TEXT_JUSTIFY_LEFT);
 	}
 
 }

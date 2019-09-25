@@ -26,6 +26,7 @@ enum {
 	NUM_RESULTS
 }
 
+(:glance)
 class SunCalc {
 
 	hidden const PI   = Math.PI,
