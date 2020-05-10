@@ -52,16 +52,21 @@ class SimplyDaylightWidgetView extends Ui.View {
     }
 
 	(:oneLine)
-    function Draw(set) {
+    function Draw(set, useGrey) {
 	        View.findDrawableById("title").setText(title[set]);
-			View.findDrawableById("value").setText(suntimes[set][0]);
+			var val = View.findDrawableById("value");
+			val.setText(suntimes[set][0]);
+			val.setColor(useGrey ? Gfx.COLOR_LT_GRAY : Gfx.COLOR_WHITE);
 			View.findDrawableById("day").setText(suntimes[set][2] + " " + suntimes[set][1]);
 	}
 	
 	(:twoLines)
-    function Draw(set) {
+    function Draw(set, useGrey) {
 	        View.findDrawableById("title").setText(title[set]);
 			View.findDrawableById("value").setText(suntimes[set][0]);
+			var val = View.findDrawableById("value");
+			val.setText(suntimes[set][0]);
+			val.setColor(useGrey ? Gfx.COLOR_LT_GRAY : Gfx.COLOR_WHITE);
 			View.findDrawableById("hour").setText(suntimes[set][1]);
 			View.findDrawableById("day").setText(suntimes[set][2]);
 	}
@@ -145,7 +150,7 @@ class SimplyDaylightWidgetView extends Ui.View {
 			suntimes[set] = ["00:00", "", ""];
 		}
 		if (suntimes[set][0] != null) {
-		   	Draw(set);
+		   	Draw(set, myInfo.accuracy == Position.QUALITY_LAST_KNOWN);
 		}
 
         // Call the parent onUpdate function to redraw the layout
