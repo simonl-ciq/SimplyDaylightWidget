@@ -5,6 +5,7 @@ class SimplyDaylightWidgetDelegate extends Ui.BehaviorDelegate {
     /* Initialize and get a reference to the view, so that
      * user iterations can call methods in the main view. */
      var SSTView;
+     var lastSet;
      
     function initialize(view) {
         Ui.BehaviorDelegate.initialize();
@@ -12,18 +13,23 @@ class SimplyDaylightWidgetDelegate extends Ui.BehaviorDelegate {
     }
 
     function onSelect() {
-        SSTView.set = (SSTView.set + 1) % 2;
-        SSTView.selected = true;
+    	if (SSTView.set != 2) {
+	        SSTView.set = (SSTView.set + 1) % 2;
+        	SSTView.selected = true;
+        }
         Ui.requestUpdate();
         return true;
     }
 
-    /* Menu button press. */
-/*
     function onMenu() {
-        parentView.set = parentView.set ? false : true;
+    	if (SSTView.set != 2) {
+	        lastSet = SSTView.set;
+    	    SSTView.set = 2;
+        } else {
+        	SSTView.set = lastSet;
+        }
+       	SSTView.selected = true;
         Ui.requestUpdate();
         return true;
     }
-*/
 }

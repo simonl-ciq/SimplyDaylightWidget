@@ -115,13 +115,13 @@ class SunCalc {
 		return fromJulian(Jrise);
 	}
 	
-function momentToString(moment, Today, Tomorrow) {
+function momentToString(moment, secs, Today, Tomorrow) {
 // based on https://github.com/haraldh/SunCalc/blob/master/source/SunCalcView.mc
 		if (moment == null) {
 			return "--:--";
 		}
 
-   		var tinfo = Time.Gregorian.info(new Time.Moment(moment.value() + 30), Time.FORMAT_SHORT);
+   		var tinfo = Time.Gregorian.info(new Time.Moment(moment.value() + secs), Time.FORMAT_SHORT);
 		var XM="";
 		var text="";
 		var time;

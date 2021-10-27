@@ -3,7 +3,7 @@ using Toybox.Graphics as Gfx;
 using Toybox.Time as Time;
 using Toybox.Position as Position;
 using Toybox.Time.Gregorian;
-//using Toybox.System as Sys;
+using Toybox.System as Sys;
 
 class SimplyDaylightWidgetView extends Ui.View {
 	var Today;
@@ -11,14 +11,15 @@ class SimplyDaylightWidgetView extends Ui.View {
 
 	var selected = false;
 	var set = 0;
-	var titles = ["Sunrise", "Sunset"];
-	var title = [titles[0], titles[1]];
-	var suntimes = [[null, null, null], [null, null, null]];
+	var titles = ["Sunrise", "Sunset", "Solar Noon"];
+	var title = [titles[0], titles[1], titles[2]];
+	var suntimes = [[null, null, null], [null, null, null], [null, null, null]];
 	var myInfo = null;
 	var needGPS = true;
 
     function initialize() {
         View.initialize();
+
     }
 
 	(:xtinyRound)
@@ -52,16 +53,20 @@ class SimplyDaylightWidgetView extends Ui.View {
     }
 
 	(:oneLine)
-    function Draw(set) {
+    function Draw(set, useGrey) {
 	        View.findDrawableById("title").setText(title[set]);
-			View.findDrawableById("value").setText(suntimes[set][0]);
+			var val = View.findDrawableById("value");
+			val.setText(suntimes[set][0]);
+			val.setColor(useGrey ? Gfx.COLOR_LT_GRAY : Gfx.COLOR_WHITE);
 			View.findDrawableById("day").setText(suntimes[set][2] + " " + suntimes[set][1]);
 	}
 	
 	(:twoLines)
-    function Draw(set) {
+    function Draw(set, useGrey) {
 	        View.findDrawableById("title").setText(title[set]);
-			View.findDrawableById("value").setText(suntimes[set][0]);
+			var val = View.findDrawableById("value");
+			val.setColor(useGrey ? Gfx.COLOR_LT_GRAY : Gfx.COLOR_WHITE);
+			val.setText(suntimes[set][0]);
 			View.findDrawableById("hour").setText(suntimes[set][1]);
 			View.findDrawableById("day").setText(suntimes[set][2]);
 	}
@@ -79,6 +84,8 @@ class SimplyDaylightWidgetView extends Ui.View {
         Tomorrow = Ui.loadResource( Rez.Strings.Tomorrow );
 	    var params = LayItOut();
 		View.setLayout(Rez.Layouts.MainLayout(dc));
+		var title = View.findDrawableById("title");
+		title.locY += 10;
 		var value = View.findDrawableById("value");
 		var hour = View.findDrawableById("hour");
 		var day = View.findDrawableById("day");
@@ -113,34 +120,52 @@ class SimplyDaylightWidgetView extends Ui.View {
 	    		}
 	    	}
 		}
-//	    	    myInfo.position = Position.parse("53.825564, -2.421976", Position.GEO_DEG);
 //	    	    myInfo.position = Position.parse("34.0522, -118.2437", Position.GEO_DEG);
-// Tokyo 35.6762, 139.6503
+// Windermere 54.367132, -2.925453
+/*        
+        var lat = 53.32257;
+        var lon = -2.6454; // Home
+        lon = -111.89; // Salt Lake City
+        lon = 139.77; // Tokyo
+        lon = 71.45; // Astana
+*/
+//myInfo.position = Position.parse("54.380557, -2.9141235", Position.GEO_DEG);
+
 		if (myInfo.accuracy > Position.QUALITY_NOT_AVAILABLE) {
     		var sc = new SunCalc();
     		var loc = myInfo.position.toRadians();
 	    	var time_now = Time.now();
 	    	var time_tomorrow = time_now.add(new Time.Duration(Gregorian.SECONDS_PER_DAY));
 	    	var sunrise_time = sc.calculate(time_now, loc[0], loc[1], SUNRISE);
-	    	if (sunrise_time.lessThan(time_now)) {
+	    	if (sunrise_time != null && sunrise_time.lessThan(time_now)) {
 	    		sunrise_time = sc.calculate(time_tomorrow, loc[0], loc[1], SUNRISE);
 	    	}
 	    	var sunset_time = sc.calculate(time_now, loc[0], loc[1], SUNSET);
-	    	if (sunset_time.lessThan(time_now)) {
+	    	if (sunset_time != null && sunset_time.lessThan(time_now)) {
 	    		sunset_time = sc.calculate(time_tomorrow, loc[0], loc[1], SUNSET);
 	    	}
-	    	if (!selected && sunset_time.lessThan(sunrise_time)) {
-	    		set = 1;
-	    	}
-	    	suntimes[0] = sc.momentToString(sunrise_time, Today, Tomorrow);
-	    	suntimes[1] = sc.momentToString(sunset_time, Today, Tomorrow);
-			title = titles;
+	    	if (sunrise_time == null || sunset_time == null) {
+				title[set] = "No time";
+				suntimes[set] = ["00:00", "", ""];
+			} else {
+		    	if (!selected && sunset_time.lessThan(sunrise_time)) {
+		    		set = 1;
+	    		}
+	    		suntimes[0] = sc.momentToString(sunrise_time, 30, Today, Tomorrow);
+	    		suntimes[1] = sc.momentToString(sunset_time, 30, Today, Tomorrow);
+				var noon = sc.calculate(time_now, loc[0], loc[1], NOON);
+				if (noon != null && noon.lessThan(time_now)) {
+					noon = sc.calculate(time_tomorrow, loc[0], loc[1], NOON);
+				}
+    			suntimes[2] = sc.momentToString(noon, -27, Today, Tomorrow);
+				title = titles;
+			}
 		} else {
 			title[set] = "No GPS";
 			suntimes[set] = ["00:00", "", ""];
 		}
-	    if (suntimes[set][0] != null) {
-	    	Draw(set);
+		if (suntimes[set][0] != null) {
+		   	Draw(set, myInfo.accuracy == Position.QUALITY_LAST_KNOWN);
 		}
 
         // Call the parent onUpdate function to redraw the layout
@@ -197,7 +222,7 @@ class SimplyDaylightWidgetGlanceView extends Ui.GlanceView {
 		    	time = sunrise_time;
 		    	sunevent = "Sunrise ";
 		    }
-	    	suntime = sc.momentToString(time, "", "");
+	    	suntime = sc.momentToString(time, 30, "", "");
 		}
 		dc.setColor(Graphics.COLOR_BLACK,Graphics.COLOR_BLACK);
 		dc.clear();
